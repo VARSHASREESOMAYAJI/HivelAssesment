@@ -42,6 +42,93 @@ Using Lagrange interpolation and evaluating at zero:
 
 ```sh
 javac InterpConst.java
+
+
+
+
+How I Solved the Problem (Explained with Example)
+
+The idea is simple:
+Turn every JSON entry into a point (x, y) → build a polynomial → find its constant term.
+
+I’ll explain using Testcase 1, step by step.
+
+Step 1 — Convert JSON entries into points
+
+The JSON gives:
+
+"1": { "base": "10", "value": "4" }
+"2": { "base": "2",  "value": "111" }
+"3": { "base": "10", "value": "12" }
+"6": { "base": "4",  "value": "213" }
+
+For each entry:
+
+x = base
+
+y = decoded value in that base
+
+So we compute:
+
+base = 10, value "4"
+→ y = 4
+→ point = (10, 4)
+
+base = 2, value "111"
+→ y = 7
+→ point = (2, 7)
+
+base = 10, value "12"
+→ y = 12
+BUT x = 10 again → duplicate
+→ skip
+
+base = 4, value "213"
+→ y = 2·16 + 1·4 + 3 = 39
+→ point = (4, 39)
+
+We need k = 3 distinct x-values.
+So final points are:
+
+(10, 4), (2, 7), (4, 39)
+
+Step 2 — Build the polynomial from these points
+
+With 3 points → polynomial is degree 2.
+
+We use Lagrange interpolation to evaluate it only at x=0.
+
+This gives:
+C=P(0)
+
+Step 3 — Apply the formula at x = 0
+
+For points (10,4), (2,7), (4,39):
+
+C= 4/6 + 105/6 - 390/6
+	​
+C=−281/6
+✔ Final Answer for Testcase 1
+
+-281/6
+
+This constant term comes directly from the polynomial formed by the decoded (x, y) points.
+
+Why your answer might differ from others
+
+Some people interpret the JSON differently:
+
+They treat "value" as a root, not a y-value
+
+They treat "index" as x instead of "base"
+
+They use a control-point formula, not interpolation
+
+Those interpretations give different answers (like 41), but in this method:
+
+We use (x = base, y = decoded value) and pure interpolation.
+
+So –281/6 is correct for this interpretation.
 java InterpConst testcase1.json
 
 
